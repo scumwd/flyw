@@ -1,0 +1,68 @@
+CREATE OR REPLACE RULE child1-update AS
+ ON UPDATE TO child1 WHERE NEW.id >100000 AND NEW.id <= 200000 DO INSTEAD(
+	DELETE FROM child1 WHERE id = OLD.id;
+	INSERT INTO child2 (id, name) VALUES (NEW.id, NEW.name);
+);
+
+CREATE OR REPLACE RULE child2-update AS
+ ON UPDATE TO child2 WHERE NEW.id <= 100000 OR NEW.id > 200000 AND NEW.id <= 300000 DO INSTEAD(
+	DELETE FROM child2 WHERE id = OLD.id;
+	INSERT INTO child1 (id, name) VALUES (NEW.id, NEW.name) WHERE (NEW.id >= 1 AND NEW.id <= 100000);
+	INSERT INTO child3 (id, name) VALUES (NEW.id, NEW.name) WHERE (NEW.id >200000 AND NEW.id <= 300000);
+);
+
+CREATE OR REPLACE RULE child3-update AS
+ ON UPDATE TO child3 WHERE NEW.id <= 200000 OR NEW.id > 300000 AND NEW.id <= 400000 DO INSTEAD(
+	DELETE FROM child2 WHERE id = OLD.id;
+	INSERT INTO child2 (id, name) VALUES (NEW.id, NEW.name) WHERE (NEW.id > 100000 AND NEW.id <= 200000);
+	INSERT INTO child4 (id, name) VALUES (NEW.id, NEW.name) WHERE (NEW.id > 300000 AND NEW.id <= 400000);
+);
+
+CREATE OR REPLACE RULE child4-update AS
+ ON UPDATE TO child4 WHERE NEW.id <= 300000 OR NEW.id > 400000 AND NEW.id <= 500000 DO INSTEAD(
+	DELETE FROM child4 WHERE id = OLD.id;
+	INSERT INTO child3 (id, name) VALUES (NEW.id, NEW.name) WHERE (NEW.id >200000 AND NEW.id <= 300000);
+	INSERT INTO child5 (id, name) VALUES (NEW.id, NEW.name) WHERE (NEW.id >400000 AND NEW.id <= 500000);
+);
+
+CREATE OR REPLACE RULE child5-update AS
+ ON UPDATE TO child5 WHERE NEW.id <= 400000 OR NEW.id > 500000 AND NEW.id <= 600000 DO INSTEAD(
+	DELETE FROM child5 WHERE id = OLD.id;
+	INSERT INTO child4 (id, name) VALUES (NEW.id, NEW.name) WHERE (NEW.id > 300000 AND NEW.id <= 400000);
+	INSERT INTO child6 (id, name) VALUES (NEW.id, NEW.name) WHERE (NEW.id > 500000 AND NEW.id <= 600000);
+);
+
+CREATE OR REPLACE RULE child6-update AS
+ ON UPDATE TO child6 WHERE NEW.id <= 500000 OR NEW.id > 600000 AND NEW.id <= 700000 DO INSTEAD(
+	DELETE FROM child6 WHERE id = OLD.id;
+	INSERT INTO child5 (id, name) VALUES (NEW.id, NEW.name) WHERE (NEW.id > 400000 AND NEW.id <= 500000);
+	INSERT INTO child7 (id, name) VALUES (NEW.id, NEW.name) WHERE (NEW.id > 600000 AND NEW.id <= 700000);
+);
+
+CREATE OR REPLACE RULE child7-update AS
+ ON UPDATE TO child7 WHERE NEW.id <= 600000 OR NEW.id > 700000 AND NEW.id <= 800000 DO INSTEAD(
+	DELETE FROM child7 WHERE id = OLD.id;
+	INSERT INTO child6 (id, name) VALUES (NEW.id, NEW.name) WHERE (NEW.id > 500000 AND NEW.id <= 600000);
+	INSERT INTO child8 (id, name) VALUES (NEW.id, NEW.name) WHERE (NEW.id > 700000 AND NEW.id <= 800000);
+);
+
+CREATE OR REPLACE RULE child8-update AS
+ ON UPDATE TO child8 WHERE NEW.id <= 700000 OR NEW.id > 800000 AND NEW.id <= 900000 DO INSTEAD(
+	DELETE FROM child8 WHERE id = OLD.id;
+	INSERT INTO child7 (id, name) VALUES (NEW.id, NEW.name) WHERE (NEW.id > 600000 AND NEW.id <= 700000);
+	INSERT INTO child9 (id, name) VALUES (NEW.id, NEW.name) WHERE (NEW.id > 800000 AND NEW.id <= 900000);
+);
+
+CREATE OR REPLACE RULE child9-update AS
+ ON UPDATE TO child9 WHERE NEW.id <= 800000 OR NEW.id > 900000 AND NEW.id <= 1000000 DO INSTEAD(
+	DELETE FROM child9 WHERE id = OLD.id;
+	INSERT INTO child8 (id, name) VALUES (NEW.id, NEW.name) WHERE (NEW.id > 700000 AND NEW.id <= 800000);
+	INSERT INTO child10 (id, name) VALUES (NEW.id, NEW.name) WHERE (NEW.id > 900000 AND NEW.id <= 1000000);
+);
+
+CREATE OR REPLACE RULE child10-update AS
+ ON UPDATE TO child10 WHERE NEW.id <= 900000 DO INSTEAD(
+	DELETE FROM child10 WHERE id = OLD.id;
+	INSERT INTO child9 (id, name) VALUES (NEW.id, NEW.name) WHERE (NEW.id > 800000 AND NEW.id <= 900000);
+);
+
